@@ -1,0 +1,58 @@
+// 通过img标签达到类似于background-size: cover;的效果
+.tag-bg-img-cover {
+  position: relative;
+  overflow: hidden;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    min-height: 100%;
+    min-width: 100%;
+    width: 0;
+  }
+}
+
+.tag-bg-img-contain {
+  position: relative;
+  overflow: hidden;
+  img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    max-height: 100%;
+    max-width: 100%;
+    width: 999999px;
+  }
+}
+
+// 单行文字，溢出点点点
+.text-overflow-ellipsis {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+
+//-------------------启动页样式-------------------
+.page-qidong {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+
+  .page-qidong-logo {
+    width: 79Px;
+  }
+  .page-qidong-logo-text {
+    width: 75Px;
+    margin-top: 10Px;
+    margin-bottom: 100Px;
+  }
+}

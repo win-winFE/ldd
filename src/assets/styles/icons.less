@@ -1,0 +1,149 @@
+// 公共的css写的icon，
+// @commonName 为公共前缀，
+
+// 使用规范： 通过color设置图标颜色， 通过 font-size 设置图标大小（width,height也可以），
+
+// 编写规范： 颜色属性尽量通过 currentColor 设置，
+// 编写规范： 长度单位尽量使用 % 或 em 为单位 ，
+
+// icon-close : 实心圆圈带 镂空 的叉叉
+// icon-close-o : 空心圆圈带边 + 叉叉
+// icon-close-i : 只有叉叉
+// icon-check : 实心圆圈带 镂空 的叉叉
+// icon-check-o : √ 带 圆形外边框
+// icon-check-i : 只有√
+
+@commonName: icon; // ps : 这里字符串不要引号
+
+// 公共的transition属性
+.@{commonName} {
+  display: inline-block;
+  position: relative;
+
+  // &, &:before, &:after { transition: all .3s ease-in-out; }
+  & {
+    transition: all .3s ease-in-out;
+  }
+}
+
+.icon-base {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  width: 1em;
+  height: 1em;
+
+  &:before, &:after {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%)
+  }
+}
+
+// 实心圆圈带 镂空 的叉叉
+.@{commonName}-close {
+  .icon-base;
+  border-radius: 50%;
+  background-color: currentColor;
+
+  &:before, &:after {
+    content: "";
+    width: 60%;
+    height: 12%;
+    min-height: 4px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    background-color: #ffffff;
+  }
+  &:after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+}
+// 空心圆圈 带边 的叉叉
+.@{commonName}-close-o {
+  .icon-base;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 0.12em solid currentColor;
+
+  &:before, &:after {
+    content: "";
+    width: 60%;
+    height: 12%;
+    min-height: 4px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    background-color: currentColor;
+  }
+  &:after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+}
+// 只有叉叉
+.@{commonName}-close-i {
+  .icon-base;
+  border-radius: 50%;
+  box-sizing: border-box;
+
+  &:before, &:after {
+    content: "";
+    width: 60%;
+    height: 12%;
+    min-height: 4px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    background-color: currentColor;
+  }
+  &:after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+}
+
+
+// 只有√
+.@{commonName}-check-i {
+  .icon-base;
+
+  &:after {
+    content: "";
+    top: 45%;
+    width: 60%;
+    height: 30%;
+    border-bottom: 0.12em solid currentColor;
+    border-left: 0.12em solid currentColor;
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+}
+// √ 带 外边框
+.@{commonName}-check-o {
+  .icon-base;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 0.12em solid currentColor;
+
+  &:after {
+    content: "";
+    top: 45%;
+    width: 60%;
+    height: 30%;
+    border-bottom: 0.12em solid currentColor;
+    border-left: 0.12em solid currentColor;
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+}
+// 实心圆圈镂空√
+.@{commonName}-check {
+  .icon-base;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 0.12em solid currentColor;
+  background-color: currentColor;
+
+  &:after {
+    content: "";
+    top: 45%;
+    width: 60%;
+    height: 30%;
+    border-bottom: 0.12em solid #ffffff;
+    border-left: 0.12em solid #ffffff;
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+}

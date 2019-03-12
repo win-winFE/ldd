@@ -1,0 +1,36 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "测试",
+  "private": true,
+  "scripts": {
+    "start": "cross-env PORT=16667 roadhog server",
+    "dev": "cross-env PORT=16667 roadhog server",
+    "build": "roadhog build",
+    "build:test": "cross-env XX_ENV=test  roadhog build",
+    "build:prod": "cross-env XX_ENV=prod roadhog build",
+    "lint": "eslint --ext .js src test",
+    "precommit": "npm run lint"
+  },
+  "dependencies": {
+    "cross-env": "^5.2.0",
+    "dva": "^2.1.0",
+    "iakit": "^2.2.0",
+    "postcss-px2rem": "^0.3.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "styled-components": "^4.1.3"
+  },
+  "devDependencies": {
+    "babel-plugin-dva-hmr": "^0.3.2",
+    "eslint": "^4.14.0",
+    "eslint-config-umi": "^0.1.1",
+    "eslint-plugin-flowtype": "^2.34.1",
+    "eslint-plugin-import": "^2.6.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.1.0",
+    "husky": "^0.12.0",
+    "redbox-react": "^1.4.3",
+    "roadhog": "^2.0.0"
+  }
+}
