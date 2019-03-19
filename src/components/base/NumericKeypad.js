@@ -15,14 +15,14 @@ const KeypadStyle = styled.div`
   &.keypad-hide{
     //transition: transform ease-in-out .3s, display 10ms .4s;
     //display: none;
-    transform: translateY(100%);
+    transform: translate3d(0, 100%, 0);
     opacity: 0;
     pointer-events: none;
   }
   &.keypad-show{
     //transition: transform ease-in-out .3s .1s, display 10ms;
     //display: block;
-    transform: none;
+    transform: translate3d(0, 0, 0);
     opacity: 1;
     pointer-events: auto;
   }
@@ -49,11 +49,12 @@ const KeypadStyle = styled.div`
     }
   }
   .keypad-content-key-item{
-    font-family: "PingFang SC", "Heiti SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: 'Avenir-Heavy',"PingFang SC", "Heiti SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
     flex: 1;
+    user-select: none;
     text-align: center;
     border-radius: 10px;
-    padding: 20px;
+    padding: 24px;
     width: 0;
     margin-right: 12px;
     font-size: 50px;
@@ -74,36 +75,51 @@ const KeypadStyle = styled.div`
     }
   }
   .keypad-key-backspace{
+    touch-action: none;
     width: 52px;
   }
 `;
 
 class NumericKeypad extends Component {
-  constructor() {
-    super();
-    this.state = {
-      show: 0,
-      content: '',
-      extra: ''
-    };
-  }
+  state = {
+    show: false,
+    extra: ''
+  };
 
+
+  /**
+   * 注册全局事件
+   * 切换路由：隐藏虚拟键盘
+   * 点击：判断点击区域， 非虚拟键盘，非输入框区域都隐藏键盘
+   * 实体键盘点击：触发对应的数字键，
+   * */
   componentDidMount() {
     window.addEventListener('hashchange', this.hide, false);
     window.addEventListener('keypress', this.keyPressEvent, true);
     window.addEventListener('click', this.clickEvent, true);
   }
 
+  /**
+   * 注销全局事件
+   * */
+  componentWillUnmount() {
+    window.removeEventListener('hashchange', this.hide, false);
+    window.removeEventListener('keypress', this.keyPressEvent, true);
+    window.removeEventListener('click', this.clickEvent, true);
+  }
 
+  /**
+   * 键盘点击事件， 并触发对应的回调
+   * */
   keyPressEvent = e => {
     const {show} = this.state;
     if (!show) return null;
-    const {keyCode} = e;
+    const {keyCode, key} = e;
 
     // 数字键
     if (47 < keyCode && keyCode < 58) {
       const value = keyCode - 48;
-      this.addNum(value);
+      this.addChar(value);
       return null;
     }
 
@@ -116,85 +132,71 @@ class NumericKeypad extends Component {
 
   };
 
-  componentWillUnmount() {
-    window.removeEventListener('hashchange', this.hide, false);
-    window.removeEventListener('keypress', this.keyPressEvent, true);
-    window.removeEventListener('click', this.clickEvent, true);
-  }
 
   /**
-   * @param change function 触发改变的函数，函数的参数为新的值
-   * @param content string 初始值，默认为空字符串
-   * @param [blur] function 失去焦点触发的函数，
-   * @param [] function 获得焦点时触发的函数，
+   * 显示虚拟键盘，并设置回调事件，及额外按键， 并直接触发focusEvent的回调
+   * @param addEvent function 点击数字键的回调
+   * @param removeEvent function 点击删除键的回调
+   * @param [blurEvent] function 失去焦点触发的回调，
+   * @param [focusEvent] function 获得焦点时触发的回调，
+   * @param [extra] string 额外的按钮，如小数点.，#， X， 等 ，
    * */
-  show = ({change, content = '', blur, focus, maxLength, extra = ''}) => {
+  show = ({addEvent, removeEvent, blurEvent, focusEvent, extra = ''}) => {
     if (this.state.show) {
       this.hide();
     }
 
-    this.change = change;
-    this.maxLength = maxLength;
-    this.blur = blur;
-    if (typeof focus === 'function') {
-      focus();
+    this.addEvent = addEvent;
+    this.removeEvent = removeEvent;
+    this.blurEvent = blurEvent;
+    if (typeof focusEvent === 'function') {
+      focusEvent();
     }
 
-    this.setState({show: true, content, extra});
-
-    this.addPadding();
+    this.setState({show: true, extra});
   };
 
+  /**
+   * 隐藏虚拟键盘，并触发blurEvent的回调
+   * */
   hide = _ => {
     if (!this.state.show) return;
     this.setState({show: false});
-    this.removePadding();
-    if (typeof this.blur === 'function') {
-      this.blur();
+    if (typeof this.blurEvent === 'function') {
+      this.blurEvent();
     }
   };
 
-  addPadding() {
-    // document.body.style.paddingBottom = '250px';
+  /**
+   * 字符的点击事件， 触发addEvent
+   * */
+  addChar(char) {
+    this.addEvent(char);
   }
 
-  removePadding() {
-    // document.body.style.paddingBottom = '0';
-  }
-
-  clearValue() {
-    const content = '';
-    this.setState({content});
-    this.change(content);
-  };
-
-  addNum(num) {
-    let {content} = this.state;
-
-    content = content + num;
-
-    const typeMaxLength = typeof this.maxLength;
-    if (typeMaxLength === 'number' || typeMaxLength === 'string') {
-      content = content.slice(0, this.maxLength);
-    }
-
-    this.change(content);
-    this.setState({content});
-  }
-
+  /**
+   * 栅格键点击，触发对调removeEvent
+   * */
   removeNum() {
-    let {content} = this.state;
-    content = content.slice(0, content.length - 1);
-
-    this.change(content);
-    this.setState({content});
+    this.removeEvent();
   }
 
+  /**
+   * 监听全局的点击事件，点击除虚拟键盘以外的节点触发隐藏
+   * */
   clickEvent = e => {
     if (!this.state.show) return null;
     if (e.target.getAttribute('numerickeypad')) return null;
     this.hide();
   };
+
+  /**
+   * 防止在用户在虚拟键盘上回滚动
+   * */
+  static stopTouchMove(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
 
   render() {
     const {show, extra} = this.state;
@@ -205,7 +207,7 @@ class NumericKeypad extends Component {
       [extra, 0, 'backspace']
     ];
 
-    return <KeypadStyle className={`${show ? 'keypad-show' : 'keypad-hide'}`} numerickeypad="1">
+    return <KeypadStyle id='numericKeypadDom' className={`${show ? 'keypad-show' : 'keypad-hide'}`} numerickeypad="1" onTouchMove={NumericKeypad.stopTouchMove}>
       <div className="keypad-header flex-justify" numerickeypad='1'>
         <div className="flex-row" numerickeypad='1'>
           <img numerickeypad="1" src={require('../../assets/images/keypad/pad.png')} className="keypad-header-safe" alt="安全键盘"/>
@@ -222,12 +224,13 @@ class NumericKeypad extends Component {
                   if (typeof value === 'number') {
                     return <span numerickeypad='1' className="keypad-content-key-item keypad-content-key-num"
                                  key={`${lineIndex}-${index}`}
-                                 onClick={this.addNum.bind(this, value)}>{value}</span>;
+                                 onTouchStart={this.addChar.bind(this, value)}>{value}</span>;
                   } else {
                     // 特殊键值
                     if (value === 'backspace') {
-                      return <span numerickeypad='1' className="keypad-content-key-item keypad-content-key-backspace"
-                                   onClick={this.removeNum.bind(this)}
+                      return <span numerickeypad='1'
+                                   className="keypad-content-key-item keypad-content-key-backspace"
+                                   onTouchStart={this.removeNum.bind(this)}
                                    key={`${lineIndex}-${index}`}>
                         <img numerickeypad='1' className="keypad-key-backspace"
                              src={require('../../assets/images/keypad/backspace.png')} alt="backspace"/></span>;
@@ -236,7 +239,7 @@ class NumericKeypad extends Component {
                       return <span numerickeypad='1' className="keypad-content-key-item" key={`${lineIndex}-${index}`}/>;
                     }
                     return <span numerickeypad='1' className="keypad-content-key-item"
-                                 onClick={this.addNum.bind(this, value)}
+                                 onTouchStart={this.addChar.bind(this, value)}
                                  key={`${lineIndex}-${index}`}>{value}</span>;
                   }
                 })

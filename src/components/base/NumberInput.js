@@ -11,12 +11,12 @@ const InputStyle = styled.div`
   overflow: visible;
   height: 100%;
   font-size: 32px;
-  //background-color: rgba(0,250,250,.2);
+
   .virtual-cursor{
     width: 4px;
     height: 1.2em;
     background-color: currentColor;
-    // background-color: #5189FF;
+
     
     animation: shink ease-in-out infinite 1s;
     
@@ -67,8 +67,15 @@ export default class NumberInput extends Component {
     };
   }
 
+  /** 根节点 */
+  root = document.getElementById('root');
+
   /**
-   * @param format string x将代替为真实数字， 其他符号保留
+   * @param format string x将被代替为真实字符， 其他符号保留，
+   * @param value string 输入的文字
+   * @param placeholder string placeholder
+   * @param [autoFocus] boolean 是否自动聚焦，默认false
+   * @param onChange function onchange的回调函数
    * */
   static defaultProps = {
     value: '',
@@ -81,30 +88,34 @@ export default class NumberInput extends Component {
     }
   };
 
+  /**
+   * 判断组件是否autoFocus
+   * */
   componentDidMount() {
     const {autoFocus} = this.props;
     if (autoFocus) {
       this.showNumericKeypad();
-      // this.dom.focus();
     }
   }
 
+  /**
+   * 显示虚拟键盘
+   * 设置extra， focusEvent， blurEvent，addEvent，removeEvent
+   * */
   showNumericKeypad = _ => {
-    const {value, maxLength, onChange, onFocus, onBlur, extra = ''} = this.props;
+    const {onFocus, onBlur, extra = ''} = this.props;
     const that = this;
-
     NumericKeypad.show({
-      change: onChange,
+      addEvent: this.addEvent,
+      removeEvent: this.removeEvent,
       extra,
-      maxLength,
-      content: value,
-      focus: function(...params) {
+      focusEvent: function(...params) {
         that.myFocusEvent(...params);
         if (typeof onFocus === 'function') {
-          onFocus.call(this, ...params);
+          onFocus(...params);
         }
       },
-      blur: function(...params) {
+      blurEvent: function(...params) {
         that.myBlurEvent(...params);
         if (typeof onBlur === 'function') {
           onBlur.call(this, ...params);
@@ -113,50 +124,87 @@ export default class NumberInput extends Component {
     });
   };
 
+  /**
+   * 数字键盘添加文字时的回调
+   * */
+  addEvent = char => {
+    let {value, maxLength, onChange} = this.props;
+    value += char;
+    if (maxLength) value = value.slice(0, maxLength);
+    onChange(value);
+  };
 
-  addRootClass() {
-    const root = document.getElementById('root');
-    if (root) {
-      // root.classList.add('scroll-top-250');
-    }
+  /**
+   * 数字键盘删除文字时的回调
+   * */
+  removeEvent = _ => {
+    let {value, maxLength, onChange} = this.props;
+    value = value.slice(0, -1);
+    if (maxLength) value = value.slice(0, maxLength);
+    onChange(value);
+  };
+
+  /**
+   * 当假键盘弹起时，有可能会隐藏当前输入框，于是直接把根节点直接向上偏移
+   * */
+  setRootOffset(num = 300) {
+    setTimeout(_ => {
+      this.root.style.transform = `translateY(${-num}px)`;
+    }, 50);
   }
 
-  removeRootClass() {
-    const root = document.getElementById('root');
-    if (root) {
-      // root.classList.remove('scroll-top-250');
-    }
+  /**
+   * 假键盘收起， 取消根节点的偏移
+   * */
+  removeRootOffset() {
+    setTimeout(_ => {
+      this.root.style.transform = '';
+    }, 50);
   }
 
+  /**
+   * 获取焦点的回调，判断假键盘是否有可能挡住我当前的输入框
+   * */
   myFocusEvent = _ => {
     this.setState({isFocus: true});
+
+    // 输入框的底
     let {bottom} = this.inputDom.getBoundingClientRect();
-    const triggerBottom = window.innerHeight - 250;
 
-    // const rootClassList = document.getElementById('root').classList;
-    // if (rootClassList.contains('scroll-top-250')) {
-    //   bottom += 250;
-    // }
+    // 虚拟键盘的实际占用高度
+    const keypadHeight = document.getElementById('numericKeypadDom').offsetHeight + 80;
 
+    const triggerBottom = window.innerHeight - keypadHeight;
+
+    const tfNow = this.root.style.transform;
+    if (tfNow) {
+      const tfNowNum = parseInt(tfNow.replace(/[^0-9\.]/g, ''));
+      // debugger;
+      console.log(tfNowNum);
+      bottom += tfNowNum;
+    }
 
     if (bottom > triggerBottom) {
-      this.addRootClass();
+      this.setRootOffset(bottom - triggerBottom);
     }
+
   };
 
+  /**
+   * 失去焦点，隐藏假键盘
+   * */
   myBlurEvent = _ => {
     this.setState({isFocus: false});
-    this.removeRootClass();
+    this.removeRootOffset();
   };
 
-
-  hideNumericKeypad() {
-    NumericKeypad.hide();
-  }
-
-  static clearValue() {
-    NumericKeypad.clearValue();
-  }
+  /**
+   * 清除输入内容
+   * */
+  clearValue = _ => {
+    const {onChange} = this.props;
+    onChange('');
+  };
 
   render() {
     const {isFocus} = this.state;
@@ -187,7 +235,7 @@ export default class NumberInput extends Component {
         </div>
         {
           isFocus && value.length > 0 &&
-          <span numerickeypad='1' className="btn-clear icon-cross" onClick={NumberInput.clearValue}/>
+          <span numerickeypad='1' className="btn-clear icon-cross" onTouchStart={this.clearValue}/>
         }
       </InputStyle>
     );

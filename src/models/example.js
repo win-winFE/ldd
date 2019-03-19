@@ -1,7 +1,7 @@
-import {createModelActions} from '../utils/action';
+import {createModelActions, rewriteModelEffects} from '../utils/action';
 import {getBanners} from '../services/example';
 
-export default {
+const config = {
 
   namespace: 'example',
 
@@ -32,4 +32,6 @@ export default {
   },
 
 };
+
+export default rewriteModelEffects(config);
 export const ExampleActions = createModelActions(this.default);

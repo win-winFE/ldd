@@ -1,10 +1,10 @@
 // 公共的css写的icon，
 // @commonName 为公共前缀，
 
-// 使用规范： 通过color设置图标颜色， 通过 font-size 设置图标大小（width,height也可以），
+// 使用规范： 通过color设置图标颜色， 通过 font-size 设置图标大小（width,height 也可以），
 
 // 编写规范： 颜色属性尽量通过 currentColor 设置，
-// 编写规范： 长度单位尽量使用 % 或 em 为单位 ，
+// 编写规范： 长度单位: 在节点内使用 em, 在after，before的伪类里使用 %
 
 // icon-close : 实心圆圈带 镂空 的叉叉
 // icon-close-o : 空心圆圈带边 + 叉叉
@@ -12,6 +12,9 @@
 // icon-check : 实心圆圈带 镂空 的叉叉
 // icon-check-o : √ 带 圆形外边框
 // icon-check-i : 只有√
+
+// icon-easy-loading : 转转转的loading
+// icon-zoom-loading : 放大缩小的loading
 
 @commonName: icon; // ps : 这里字符串不要引号
 
@@ -24,6 +27,11 @@
   & {
     transition: all .3s ease-in-out;
   }
+
+  &:before, &:after {
+    transition: transform .3s ease-in-out;
+  }
+
 }
 
 .icon-base {
@@ -59,6 +67,7 @@
     transform: translate(-50%, -50%) rotate(-45deg);
   }
 }
+
 // 空心圆圈 带边 的叉叉
 .@{commonName}-close-o {
   .icon-base;
@@ -78,6 +87,7 @@
     transform: translate(-50%, -50%) rotate(-45deg);
   }
 }
+
 // 只有叉叉
 .@{commonName}-close-i {
   .icon-base;
@@ -97,7 +107,6 @@
   }
 }
 
-
 // 只有√
 .@{commonName}-check-i {
   .icon-base;
@@ -112,6 +121,7 @@
     transform: translate(-50%, -50%) rotate(-45deg);
   }
 }
+
 // √ 带 外边框
 .@{commonName}-check-o {
   .icon-base;
@@ -129,6 +139,7 @@
     transform: translate(-50%, -50%) rotate(-45deg);
   }
 }
+
 // 实心圆圈镂空√
 .@{commonName}-check {
   .icon-base;
@@ -147,3 +158,79 @@
     transform: translate(-50%, -50%) rotate(-45deg);
   }
 }
+
+// 转转转的loading
+.@{commonName}-easy-loading {
+  .icon-base;
+  &:before, &:after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border: 0.10em solid transparent;
+
+    left: 0;
+    top: 0;
+    transform: none;
+    animation-fill-mode: both;
+  }
+
+  &:before {
+    opacity: 0.2;
+    border: 0.10em solid currentColor;
+  }
+  &:after {
+    border-top: 0.10em solid currentColor;
+    animation: myRotate 1.6s infinite ease-in-out;
+  }
+}
+
+// 放大缩小的loading
+.@{commonName}-zoom-loading {
+  .icon-base;
+  animation: myRotate 4s infinite linear;
+
+  &:before, &:after {
+    content: "";
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+
+    left: 0;
+    top: 0;
+    transform: none;
+    animation-fill-mode: both;
+    background-color: currentColor;
+    animation: myZoom 2s infinite ease-in-out;
+    transform-origin: 30% center;
+  }
+
+  &:before {
+    opacity: 0.3;
+    animation-delay: 50ms;
+  }
+  &:after {
+    opacity: 0.5;
+    animation-delay: 850ms;
+  }
+}
+
+@keyframes myZoom {
+  from, to {
+    transform: scale3d(1, 1, 1);
+  }
+  50% {
+    transform: scale3d(0.1, 0.1, 1);
+  }
+}
+
+@keyframes myRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+

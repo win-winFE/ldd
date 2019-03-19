@@ -6,9 +6,10 @@
   "scripts": {
     "start": "cross-env PORT=16667 roadhog server",
     "dev": "cross-env PORT=16667 roadhog server",
-    "build": "roadhog build",
+    "build": "cross-env XX_ENV=local roadhog build",
     "build:test": "cross-env XX_ENV=test  roadhog build",
     "build:prod": "cross-env XX_ENV=prod roadhog build",
+
     "lint": "eslint --ext .js src test",
     "precommit": "npm run lint"
   },

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import styled from 'styled-px2rem';
 
-
+const LoaderTrackBox = styled.div`overflow: hidden`;
 const LoaderTrackStyled = styled.div`
   overflow: visible;
   &.no-touching{
@@ -23,6 +23,8 @@ const LoaderStyled = styled.div`
   }
   .loader-img {
     margin-top: 10px;
+    font-size: 56px;
+    color: #5169dd;
     img {
       width: 64px;
     }
@@ -30,30 +32,23 @@ const LoaderStyled = styled.div`
 `;
 
 export default class PullLoader extends Component {
-  constructor() {
-    super();
-    this.state = {
-      Y: 0,
-      state: 'nothing',// 状态：nothing, pulling, pending, refreshing, releasing,
-      touching: false,
-      startX: 0,
-      startY: 0,
 
-      touchStartPoint: [0, 0],
-      top0: 0,
-      triggerHeight: 60,
-      pullLoaderStatus: 0,  // 0: 待确定， -1:不是下拉 ， 1:是下拉
-    };
+  state = {
+    Y: 0,
+    state: 'nothing',  // 状态：nothing, pulling, pending, refreshing, releasing,
+    touching: false,  // 手指是否在屏幕上
+    startX: 0,         //
+    startY: 0,
 
-    this.touchEndEvent = this.touchEndEvent.bind(this);
-    this.touchStartEvent = this.touchStartEvent.bind(this);
-    this.touchMoveEvent = this.touchMoveEvent.bind(this);
-    this.checkToTop = this.checkToTop.bind(this);
-    this.getTriggerHeight = this.getTriggerHeight.bind(this);
-    this.checkTriggerEvent = this.checkTriggerEvent.bind(this);
-    this.triggerEvent = this.triggerEvent.bind(this);
-  }
+    touchStartPoint: [0, 0],
+    top0: 0,
+    triggerHeight: 60,
+    pullLoaderStatus: 0,  // 0: 待确定， -1:不是下拉 ， 1:是下拉
+  };
 
+  /**
+   * 默认的props, refresh: 下拉刷新触发的回调， 默认reload
+   * */
   static defaultProps = {
     refresh: _ => {
       console.log('refresh');
@@ -68,7 +63,7 @@ export default class PullLoader extends Component {
     this.setState({triggerHeight});
   }
 
-  checkToTop(screenX, screenY) {
+  checkToTop = (screenX, screenY) => {
     const pullDom = this.pullDom;
     const top = pullDom.getBoundingClientRect().top;
     const maxTop = Math.max(this.state.top0, pullDom.parentElement.getBoundingClientRect().top);
@@ -83,7 +78,7 @@ export default class PullLoader extends Component {
       }
       return true;
     }
-  }
+  };
 
   checkState(Y) {
     let {state, triggerHeight} = this.state;
@@ -136,7 +131,7 @@ export default class PullLoader extends Component {
     }
   }
 
-  touchMoveEvent(event) {
+  touchMoveEvent = (event) => {
     const {screenY, screenX} = event.touches[0];
 
     switch (this.state.pullLoaderStatus) {
@@ -171,14 +166,14 @@ export default class PullLoader extends Component {
         this.checkState(Y);
       }
     }
-  }
+  };
 
-  touchEndEvent(event) {
+  touchEndEvent = (event) => {
     this.setState({touching: false, startY: 0, Y: 0, pullLoaderStatus: 0});
     this.checkTriggerEvent();
-  }
+  };
 
-  touchStartEvent(event) {
+  touchStartEvent = (event) => {
     this.getTriggerHeight();
     this.setState({touching: true});
     const {screenX, screenY} = event.touches[0];
@@ -186,17 +181,17 @@ export default class PullLoader extends Component {
     this.setState({
       touchStartPoint: [screenX, screenY]
     });
-  }
+  };
 
   render() {
     const {children} = this.props;
     const {Y, touching, state, triggerHeight} = this.state;
 
     return (
-      <div className='flex-block-flex1'>
+      <LoaderTrackBox className='flex-block-flex1'>
         <LoaderTrackStyled
           ref={dom => this.pullDom = dom}
-          className={touching ? 'flex-block-flex1' : 'no-touching flex-block-flex1'}
+          className={`flex-block-flex1 ${touching ? '' : 'no-touching'}`}
           onTouchEnd={this.touchEndEvent}
           onTouchStart={this.touchStartEvent}
           onTouchMove={this.touchMoveEvent}
@@ -208,19 +203,25 @@ export default class PullLoader extends Component {
 
           <LoaderStyled>
             <div ref={dom => this.loaderDom = dom} className="loader-dom flex-col">
-              <div className="loader-img"><img src={require('../../assets/images/loading/loading.gif')} alt=""/></div>
+              <div className="loader-img">
+                {/*<img src={require('../../assets/images/loading/loading.gif')} alt=""/>*/}
+                <span className='icon-easy-loading'/>
+              </div>
               <div className="loader-state-text">{getStateText(state)}</div>
             </div>
           </LoaderStyled>
 
           {children}
         </LoaderTrackStyled>
-      </div>
+      </LoaderTrackBox>
     );
   }
 }
 
 
+/**
+ * 根据手指移动距离， 计算滑块滑动距离
+ * */
 function getY(y) {
   const base = 200;
   let res = 0;
@@ -232,6 +233,9 @@ function getY(y) {
   return res;
 }
 
+/**
+ * 根据状态， 返回状态对应的文字，
+ * */
 function getStateText(state) {
   let text = '下拉刷新';
   switch (state) {

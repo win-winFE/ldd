@@ -17,8 +17,13 @@ function checkStatus(response) {
   throw error;
 }
 
+/**
+ * 假设数据返回格式{ code, succ, errMsg, data }
+ * succ判断成功失败，errMsg为错误信息，
+ * code控制一些特殊状态，如：登录过期，需要重返登录页，
+ * */
 function checkResult(res) {
-  const {success, message, ...other} = res;
+  const {success, message} = res;
   if (success) {
     // return Object.keys(other).length ? {message, ...other} : message;
     return message;

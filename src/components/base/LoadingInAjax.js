@@ -34,18 +34,20 @@ const LoadingStyle = styled.div`
 `;
 
 class LoadingInAjax extends Component {
-  constructor() {
-    super();
-    this.state = {
-      show: 0
-    };
-  }
+  state = {
+    show: false
+  };
 
-
+  /**
+   * 展示loading
+   * */
   show = _ => {
     this.setState({show: true});
   };
 
+  /**
+   * 隐藏loading
+   * */
   hide = _ => {
     this.setState({show: false});
   };
