@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 
-
+/**
+ * 对于原生img标签的封装，包含加载中，加载失败，加载成功的对应状态，以及图片懒加载
+ *
+ *
+ * */
 export default class DefaultImg extends Component {
   // 默认的props， 允许设置加载失败的img与加载中的img
   static defaultProps = {
@@ -8,21 +12,36 @@ export default class DefaultImg extends Component {
     loadingImg: require('../../assets/images/default/default.png'),
     errorImg: require('../../assets/images/default/default.png')
   };
-
+  // 默认state
   state = {
     status: 0,  // 0:代表正在请求图片， 1：请求成功， -1：请求失败
     isMounted: true, // 判断组件是否卸载，为了解决组件卸载后setState会报错的问题
     srcIndex: 0, // 为了防止在第一张图片未加载完成时， 直接修改src，切换到另一张图片加载，这时第一张图片加载完成后，不允许更新state
   };
 
+  // 生命周期函数
+
+
+  /** 组件将卸载 */
   componentWillUnmount() {
     this.setState({isMounted: false});
   }
 
+  /** 组件已经装载完成 */
   componentDidMount() {
     const {src} = this.props;
     this.loadSrc(src);
   }
+
+  /**
+   * 组件更新:动态更改图片的src属性， 需要重新加载src
+   * */
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    if (this.props.src !== nextProps.src) {
+      this.loadSrc(nextProps.src);
+    }
+  }
+
 
   /**
    * 加载src的图片，加载完成后更新state
@@ -53,14 +72,7 @@ export default class DefaultImg extends Component {
     img.src = src;
   }
 
-  /**
-   * 动态更改图片的src属性， 需要重新加载src
-   * */
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.props.src !== nextProps.src) {
-      this.loadSrc(nextProps.src);
-    }
-  }
+
 
 
   render() {

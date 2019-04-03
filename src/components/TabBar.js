@@ -20,6 +20,12 @@ const TabBarStyle = styled.div`
 `;
 
 
+
+/**
+ * tabbar 组件，
+ * @param { index } number 第几个显示为激活状态，从0开始
+ * 示例 <TabBar index={0}>
+ * */
 export default class TabBar extends Component {
   render() {
     const {index} = this.props;

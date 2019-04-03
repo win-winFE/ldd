@@ -1,12 +1,16 @@
 import React from 'react';
-import { Router, Route, Switch } from 'dva/router';
-import IndexPage from './routes/IndexPage/index';
+import {Router, Route, Switch} from 'dva/router';
+import routerConfig from './routerConfig';
 
-function RouterConfig({ history }) {
+function RouterConfig({history}) {
   return (
     <Router history={history}>
       <Switch>
-        <Route path="/" exact component={IndexPage} />
+        {
+          routerConfig.map((value, index, array) => (
+            <Route path={value.path} exact={value.exact} component={value.component} key={index}/>
+          ))
+        }
       </Switch>
     </Router>
   );

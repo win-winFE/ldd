@@ -28,7 +28,6 @@ export const createModelActions = (config) => {
 export const rewriteModelEffects = config => {
   try {
     const {effects, ...others} = config;
-    console.log(effects);
     return {effects, ...others};
   } catch (e) {
     console.error('rewriteModelEffects函数参数错误', e);

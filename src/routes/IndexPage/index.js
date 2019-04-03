@@ -6,6 +6,11 @@ import './index.less';
 
 @connect(() => ({}), {})
 export default class IndexPage extends Component {
+  componentDidMount() {
+    // console.log(this.props.match);
+  }
+
+
   render() {
     return (
       <LayoutComponent footer={<TabBar index={0}/>}>

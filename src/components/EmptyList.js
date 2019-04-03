@@ -15,6 +15,12 @@ const EmptyListStyle = styled.div`
   }
 `;
 
+
+/**
+ * 列表数据为空
+ * @param { text } string
+ * 示例： <EmptyList text="XXX 数据暂无"/>
+ * */
 export default class EmptyList extends Component {
 
   static defaultProps = {

@@ -1,6 +1,26 @@
 [![issue](https://img.shields.io/github/issues/win-winFE/dms-api.svg)](https://github.com/win-winFE/ldd-template)
 [![license](https://img.shields.io/github/license/win-winFE/dms-api.svg)](https://github.com/win-winFE/ldd-template)
 
+### 简介
+本模板单纯的在 [dva](https://github.com/dvajs/dva) 的基础上添加了一些常用的UI库，以方便快速开发
+
+
+
+### [包含组件](./src/components/index.js)
+```textmate
+>  LayoutComponent: 整个页面布局组件，可以设置页头页脚，,
+>  PullLoader ： 下拉加载,
+>  ScrollLoader ： 滚动触底，,
+>  PullAndScrollLoader ： 下拉加载 + 滚动触底,
+>  LoadingInAjax ： loading的弹框,
+>  DefaultImg ： img组件，可设置加载中，加载成功，加载失败图片， 后期准备接入懒加载（TODO）,
+>  TabBar ： 统一APP中的Tabbar,
+>  NumberInput ： 与 NumericKeypad 配套使用的输入框,
+>  NumericKeypad ： 虚拟数字键盘，NumberInput ,
+>  EmptyList ： 列表为空的组件
+```
+
+
 
 ### 安装
 ```bash
